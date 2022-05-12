@@ -1,0 +1,12 @@
+[enu default]
+
+STS_LEFT_SOUND   = "⚟";
+STS_CENTER_SOUND = "⚞⚟";
+STS_RIGHT_SOUND  = "⚞";
+
+STS_MENU_NAME  = "\cj⚞\c- Sound to Screen Options";
+STS_MENU_TITLE = "Sound to Screen";
+
+STS_SCALE = "Scale";
+STS_X_DISTANCE = "Horizontal distance from center";
+STS_Y_POSITION = "Vertical position";
