@@ -10,25 +10,42 @@ class sts_EventHandler : EventHandler
     if (players[consolePlayer].mo == NULL) return;
 
     if (mIsInitialized)
-      mActorIterator.reinit();
+      mIterator.reinit();
     else
       initialize();
 
     let player = players[consolePlayer].mo;
-    Actor anActor;
-    while (anActor = Actor(mActorIterator.next()))
+    Thinker aThinker;
+    while (aThinker = mIterator.next())
     {
-      if (anActor == player) continue;
-      if (anActor is "Inventory" && Inventory(anActor).owner != NULL) continue;
-      if (!anActor.isActorPlayingSound(CHAN_AUTO)) continue;
-      if (anActor.distance2D(player) > MAX_DISTANCE) continue;
+      let anActor = Actor(aThinker);
+      if (anActor != NULL)
+      {
+        if (anActor == player) continue;
+        if (anActor is "Inventory" && Inventory(anActor).owner != NULL) continue;
+        if (!anActor.isActorPlayingSound(CHAN_AUTO)) continue;
+        if (anActor.distance2DSquared(player) > MAX_DISTANCE_SQUARED) continue;
 
-      let type = (anActor.bIsMonster || anActor.bMissile) ? Danger : Ambient;
-      let position = calculateScreenPosition(anActor);
-      mSounds[position] = max(mSounds[position], type);
+        let type = (anActor.bIsMonster || anActor.bMissile) ? Danger : Ambient;
+        let position = calculateActorScreenPosition(anActor);
+        mSounds[position] = max(mSounds[position], type);
 
-      if (mSounds[Left] == Danger && mSounds[Center] == Danger && mSounds[Right] == Danger)
-        break;
+        if (mSounds[Left] == Danger && mSounds[Center] == Danger && mSounds[Right] == Danger)
+          break;
+
+        continue;
+      }
+
+      let aMover = Mover(aThinker);
+      if (aMover != NULL)
+      {
+        Sector aSector = aMover.getSector();
+        vector3 playerRelative = player.posRelative(aSector);
+        vector2 diff = aSector.centerSpot - playerRelative.xy;
+        if (diff.length() > MAX_DISTANCE) continue;
+        let position = calculateSectorScreenPosition(aSector);
+        mSounds[position] = max(mSounds[position], Geometry);
+      }
     }
   }
 
@@ -60,7 +77,7 @@ class sts_EventHandler : EventHandler
                   scaledMargin, screenWidth - textWidth - scaledMargin);
     int y = clamp(int(mYPositionCvar.getFloat() * screenHeight),
                   scaledMargin, screenHeight - textHeight - scaledMargin);
-    int color = (mSounds[screenPosition] == Ambient) ? Font.CR_WHITE : Font.CR_RED;
+    int color = mColors[mSounds[screenPosition]];
 
     Screen.dim("000000", 0.5,
                x - scaledMargin, y - scaledMargin,
@@ -71,21 +88,27 @@ class sts_EventHandler : EventHandler
   private void initialize()
   {
     mIsInitialized = true;
-    mActorIterator = ThinkerIterator.create("Actor");
+    mIterator = ThinkerIterator.create("Thinker");
 
     PlayerInfo player = players[consolePlayer];
     mScaleCvar     = Cvar.getCvar("sts_scale", player);
     mXDistanceCvar = Cvar.getCvar("sts_x_distance", player);
     mYPositionCvar = Cvar.getCvar("sts_y_position", player);
+
+    mColors[None]     = Font.CR_WHITE;
+    mColors[Ambient]  = Font.CR_WHITE;
+    mColors[Geometry] = Font.CR_GREEN;
+    mColors[Danger]   = Font.CR_RED;
   }
 
-  enum SoundType {None, Ambient, Danger}
+  enum SoundType {None, Ambient, Geometry, Danger, SoundTypesCount}
   enum ScreenPosition {Left, Center, Right, PositionsCount}
   const MARGIN = 5;
   const SCREEN_CENTER = 0.5;
   const MAX_DISTANCE = 2048;
+  const MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE;
 
-  private static ScreenPosition calculateScreenPosition(Actor target)
+  private static ScreenPosition calculateActorScreenPosition(Actor target)
   {
     PlayerInfo player = players[consolePlayer];
     double angleToTarget = (player.mo.angleTo(target) - player.mo.angle) % 360.0 - 180.0;
@@ -96,9 +119,23 @@ class sts_EventHandler : EventHandler
     return (angleToTarget < 0.0) ? Left : Right;
   }
 
+  private static ScreenPosition calculateSectorScreenPosition(sector aSector)
+  {
+    PlayerInfo player = players[consolePlayer];
+    vector3 playerRelative = player.mo.posRelative(aSector);
+    vector2 diff = aSector.centerSpot - playerRelative.xy;
+    double angleToTarget = (atan2(diff.y, diff.x) - player.mo.angle) % 360.0 - 180.0;
+
+    if (abs(angleToTarget) > (180 - player.fov / 2))
+      return Center;
+
+    return (angleToTarget < 0.0) ? Left : Right;
+  }
+
   private SoundType mSounds[PositionsCount];
+  private int mColors[SoundTypesCount];
   private transient bool mIsInitialized;
-  private transient ThinkerIterator mActorIterator;
+  private transient ThinkerIterator mIterator;
   private transient Cvar mScaleCvar;
   private transient Cvar mXDistanceCvar;
   private transient Cvar mYPositionCvar;
