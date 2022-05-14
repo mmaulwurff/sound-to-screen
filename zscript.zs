@@ -29,7 +29,7 @@ class sts_EventHandler : EventHandler
         if (!anActor.isActorPlayingSound(CHAN_AUTO)) continue;
         if (anActor.distance2DSquared(player) > maxDistanceSquared) continue;
 
-        let type = (anActor.bIsMonster || anActor.bMissile) ? Danger : Ambient;
+        let type = (anActor.bIsMonster || anActor.bMissile) ? Danger : Noise;
         let position = calculateActorScreenPosition(anActor);
         mSounds[position] = max(mSounds[position], type);
 
@@ -60,6 +60,10 @@ class sts_EventHandler : EventHandler
     double xDistance = mXDistanceCvar.getFloat();
     double leftPosition  = SCREEN_CENTER - xDistance;
     double rightPosition = SCREEN_CENTER + xDistance;
+
+    mColors[Noise]    = mColorNoiseCvar.getInt();
+    mColors[Geometry] = mColorGeometryCvar.getInt();
+    mColors[Danger]   = mColorDangerCvar.getInt();
 
     if (mSounds[Left])   renderText(Left,   leftPosition,  "STS_LEFT_SOUND");
     if (mSounds[Center]) renderText(Center, SCREEN_CENTER, "STS_CENTER_SOUND");
@@ -100,13 +104,12 @@ class sts_EventHandler : EventHandler
     mYPositionCvar   = Cvar.getCvar("sts_y_position", player);
     mMaxDistanceCvar = Cvar.getCvar("sts_max_distance", player);
 
-    mColors[None]     = Font.CR_WHITE;
-    mColors[Ambient]  = Font.CR_WHITE;
-    mColors[Geometry] = Font.CR_GREEN;
-    mColors[Danger]   = Font.CR_RED;
+    mColorNoiseCvar    = Cvar.getCvar("sts_color_noise", player);
+    mColorGeometryCvar = Cvar.getCvar("sts_color_geometry", player);
+    mColorDangerCvar   = Cvar.getCvar("sts_color_danger", player);
   }
 
-  enum SoundType {None, Ambient, Geometry, Danger, SoundTypesCount}
+  enum SoundType {None, Noise, Geometry, Danger, SoundTypesCount}
   enum ScreenPosition {Left, Center, Right, PositionsCount}
   const MARGIN = 5;
   const SCREEN_CENTER = 0.5;
@@ -136,7 +139,7 @@ class sts_EventHandler : EventHandler
   }
 
   private SoundType mSounds[PositionsCount];
-  private int mColors[SoundTypesCount];
+  private ui int mColors[SoundTypesCount];
   private transient bool mIsInitialized;
   private transient ThinkerIterator mIterator;
 
@@ -144,4 +147,7 @@ class sts_EventHandler : EventHandler
   private transient Cvar mXDistanceCvar;
   private transient Cvar mYPositionCvar;
   private transient Cvar mMaxDistanceCvar;
+  private transient Cvar mColorNoiseCvar;
+  private transient Cvar mColorGeometryCvar;
+  private transient Cvar mColorDangerCvar;
 }

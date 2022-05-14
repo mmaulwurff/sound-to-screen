@@ -12,4 +12,8 @@ STS_SCALE = "Scale";
 STS_X_DISTANCE = "Horizontal distance from center";
 STS_Y_POSITION = "Vertical position";
 
+STS_COLOR_NOISE    = "Noise color";
+STS_COLOR_GEOMETRY = "Level geometry change color";
+STS_COLOR_DANGER   = "Danger color";
+
 STS_MAX_DISTANCE = "Maximum distance to sound";

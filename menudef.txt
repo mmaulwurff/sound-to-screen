@@ -10,5 +10,10 @@ OptionMenu sts_Menu
   Slider "$STS_Y_POSITION", sts_y_position, 0.0, 1.0, 0.01, 2
 
   StaticText ""
+  Option "$STS_COLOR_NOISE",    sts_color_noise,    TextColors
+  Option "$STS_COLOR_GEOMETRY", sts_color_geometry, TextColors
+  Option "$STS_COLOR_DANGER",   sts_color_danger,   TextColors
+
+  StaticText ""
   Slider "$STS_MAX_DISTANCE", sts_max_distance, 500, 10000, 50, 0
 }

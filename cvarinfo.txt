@@ -1,4 +1,7 @@
 user int   sts_scale = 2;
 user float sts_x_distance = 0.3;
 user float sts_y_position = 0.7;
+user int   sts_color_noise = 9; // white
+user int   sts_color_geometry = 3; // green
+user int   sts_color_danger = 6; // red
 user int   sts_max_distance = 2000;
