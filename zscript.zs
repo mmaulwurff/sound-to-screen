@@ -14,6 +14,9 @@ class sts_EventHandler : EventHandler
     else
       initialize();
 
+    int maxDistance = mMaxDistanceCvar.getInt();
+    int maxDistanceSquared = maxDistance * maxDistance;
+
     let player = players[consolePlayer].mo;
     Thinker aThinker;
     while (aThinker = mIterator.next())
@@ -24,7 +27,7 @@ class sts_EventHandler : EventHandler
         if (anActor == player) continue;
         if (anActor is "Inventory" && Inventory(anActor).owner != NULL) continue;
         if (!anActor.isActorPlayingSound(CHAN_AUTO)) continue;
-        if (anActor.distance2DSquared(player) > MAX_DISTANCE_SQUARED) continue;
+        if (anActor.distance2DSquared(player) > maxDistanceSquared) continue;
 
         let type = (anActor.bIsMonster || anActor.bMissile) ? Danger : Ambient;
         let position = calculateActorScreenPosition(anActor);
@@ -42,7 +45,7 @@ class sts_EventHandler : EventHandler
         Sector aSector = aMover.getSector();
         vector3 playerRelative = player.posRelative(aSector);
         vector2 diff = aSector.centerSpot - playerRelative.xy;
-        if (diff.length() > MAX_DISTANCE) continue;
+        if (diff.length() > maxDistance) continue;
         let position = calculateSectorScreenPosition(aSector);
         mSounds[position] = max(mSounds[position], Geometry);
       }
@@ -92,9 +95,10 @@ class sts_EventHandler : EventHandler
     mIterator = ThinkerIterator.create("Thinker");
 
     PlayerInfo player = players[consolePlayer];
-    mScaleCvar     = Cvar.getCvar("sts_scale", player);
-    mXDistanceCvar = Cvar.getCvar("sts_x_distance", player);
-    mYPositionCvar = Cvar.getCvar("sts_y_position", player);
+    mScaleCvar       = Cvar.getCvar("sts_scale", player);
+    mXDistanceCvar   = Cvar.getCvar("sts_x_distance", player);
+    mYPositionCvar   = Cvar.getCvar("sts_y_position", player);
+    mMaxDistanceCvar = Cvar.getCvar("sts_max_distance", player);
 
     mColors[None]     = Font.CR_WHITE;
     mColors[Ambient]  = Font.CR_WHITE;
@@ -106,8 +110,6 @@ class sts_EventHandler : EventHandler
   enum ScreenPosition {Left, Center, Right, PositionsCount}
   const MARGIN = 5;
   const SCREEN_CENTER = 0.5;
-  const MAX_DISTANCE = 2048;
-  const MAX_DISTANCE_SQUARED = MAX_DISTANCE * MAX_DISTANCE;
 
   private static ScreenPosition calculateActorScreenPosition(Actor target)
   {
@@ -137,7 +139,9 @@ class sts_EventHandler : EventHandler
   private int mColors[SoundTypesCount];
   private transient bool mIsInitialized;
   private transient ThinkerIterator mIterator;
+
   private transient Cvar mScaleCvar;
   private transient Cvar mXDistanceCvar;
   private transient Cvar mYPositionCvar;
+  private transient Cvar mMaxDistanceCvar;
 }

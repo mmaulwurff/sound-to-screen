@@ -8,4 +8,7 @@ OptionMenu sts_Menu
   Slider "$STS_SCALE", sts_scale, 1, 6, 1, 0
   Slider "$STS_X_DISTANCE", sts_x_distance, 0.1, 0.5, 0.01, 2
   Slider "$STS_Y_POSITION", sts_y_position, 0.0, 1.0, 0.01, 2
+
+  StaticText ""
+  Slider "$STS_MAX_DISTANCE", sts_max_distance, 500, 10000, 50, 0
 }
