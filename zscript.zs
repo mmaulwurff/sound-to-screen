@@ -1,7 +1,29 @@
+/* Copyright Alexander Kromm (mmaulwurff@gmail.com) 2022
+ *
+ * This file is part of Sound to Screen.
+ *
+ * Sound to Screen is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by the Free
+ * Software Foundation, either version 3 of the License, or (at your option) any
+ * later version.
+ *
+ * Sound to Screen is distributed in the hope that it will be useful, but
+ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+ * FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Sound to Screen. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 version 4.7.1
 
 class sts_EventHandler : EventHandler
 {
+  /**
+   * Fills mSounds array by searching for actors that make sounds and
+   * doors/elevators.
+   */
   override void worldTick()
   {
     for (let position = Left; position < PositionsCount; ++position)
@@ -42,16 +64,20 @@ class sts_EventHandler : EventHandler
       let aMover = Mover(aThinker);
       if (aMover != NULL)
       {
-        Sector aSector = aMover.getSector();
-        vector3 playerRelative = player.posRelative(aSector);
-        vector2 diff = aSector.centerSpot - playerRelative.xy;
+        Sector movingSector = aMover.getSector();
+        vector3 playerRelative = player.posRelative(movingSector);
+        vector2 diff = movingSector.centerSpot - playerRelative.xy;
         if (diff.length() > maxDistance) continue;
-        let position = calculateSectorScreenPosition(aSector);
+
+        let position = calculateSectorScreenPosition(movingSector);
         mSounds[position] = max(mSounds[position], Geometry);
       }
     }
   }
 
+  /**
+   * Displays mSounds array contents on the screen.
+   */
   override void renderOverlay(RenderEvent event)
   {
     if (!mIsInitialized) return;
@@ -109,11 +135,6 @@ class sts_EventHandler : EventHandler
     mColorDangerCvar   = Cvar.getCvar("sts_color_danger", player);
   }
 
-  enum SoundType {None, Noise, Geometry, Danger, SoundTypesCount}
-  enum ScreenPosition {Left, Center, Right, PositionsCount}
-  const MARGIN = 5;
-  const SCREEN_CENTER = 0.5;
-
   private static ScreenPosition calculateActorScreenPosition(Actor target)
   {
     PlayerInfo player = players[consolePlayer];
@@ -137,6 +158,11 @@ class sts_EventHandler : EventHandler
 
     return (angleToTarget < 0.0) ? Left : Right;
   }
+
+  enum SoundType {None, Noise, Geometry, Danger, SoundTypesCount}
+  enum ScreenPosition {Left, Center, Right, PositionsCount}
+  const MARGIN = 5;
+  const SCREEN_CENTER = 0.5;
 
   private SoundType mSounds[PositionsCount];
   private ui int mColors[SoundTypesCount];
