@@ -3,6 +3,7 @@
 STS_LEFT_SOUND   = "⚟";
 STS_CENTER_SOUND = "⚞⚟";
 STS_RIGHT_SOUND  = "⚞";
+STS_BACKGROUND_COLOR = "000000";
 
 STS_MENU_NAME  = "\cj⚞\c- Sound to Screen Options";
 STS_MENU_TITLE = "Sound to Screen";

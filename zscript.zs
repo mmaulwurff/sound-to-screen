@@ -77,12 +77,13 @@ class sts_EventHandler : EventHandler
                   scaledMargin, screenWidth - textWidth - scaledMargin);
     int y = clamp(int(mYPositionCvar.getFloat() * screenHeight),
                   scaledMargin, screenHeight - textHeight - scaledMargin);
-    int color = mColors[mSounds[screenPosition]];
+    int textColor = mColors[mSounds[screenPosition]];
+    Color backgroundColor = StringTable.localize("$STS_BACKGROUND_COLOR");
 
-    Screen.dim("000000", 0.5,
+    Screen.dim(backgroundColor, 0.5,
                x - scaledMargin, y - scaledMargin,
                textWidth + 2 * scaledMargin, textHeight + 2 * scaledMargin);
-    Screen.drawText(aFont, color, x, y, text, DTA_ScaleX, scale, DTA_ScaleY, scale);
+    Screen.drawText(aFont, textColor, x, y, text, DTA_ScaleX, scale, DTA_ScaleY, scale);
   }
 
   private void initialize()
