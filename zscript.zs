@@ -38,6 +38,7 @@ class sts_EventHandler : EventHandler
 
     int maxDistance = mMaxDistanceCvar.getInt();
     int maxDistanceSquared = maxDistance * maxDistance;
+    bool noiseEnabled = mNoiseEnabledCvar.getInt();
 
     let player = players[consolePlayer].mo;
     Thinker aThinker;
@@ -52,6 +53,7 @@ class sts_EventHandler : EventHandler
         if (anActor.distance2DSquared(player) > maxDistanceSquared) continue;
 
         let type = (anActor.bIsMonster || anActor.bMissile) ? Danger : Noise;
+        if (type == Noise && !noiseEnabled) continue;
         let position = calculateActorScreenPosition(anActor);
         mSounds[position] = max(mSounds[position], type);
 
@@ -125,10 +127,11 @@ class sts_EventHandler : EventHandler
     mIterator = ThinkerIterator.create("Thinker");
 
     PlayerInfo player = players[consolePlayer];
-    mScaleCvar       = Cvar.getCvar("sts_scale", player);
-    mXDistanceCvar   = Cvar.getCvar("sts_x_distance", player);
-    mYPositionCvar   = Cvar.getCvar("sts_y_position", player);
-    mMaxDistanceCvar = Cvar.getCvar("sts_max_distance", player);
+    mScaleCvar        = Cvar.getCvar("sts_scale", player);
+    mXDistanceCvar    = Cvar.getCvar("sts_x_distance", player);
+    mYPositionCvar    = Cvar.getCvar("sts_y_position", player);
+    mMaxDistanceCvar  = Cvar.getCvar("sts_max_distance", player);
+    mNoiseEnabledCvar = Cvar.getCvar("sts_noise_enabled", player);
 
     mColorNoiseCvar    = Cvar.getCvar("sts_color_noise", player);
     mColorGeometryCvar = Cvar.getCvar("sts_color_geometry", player);
@@ -165,6 +168,7 @@ class sts_EventHandler : EventHandler
   const SCREEN_CENTER = 0.5;
 
   private SoundType mSounds[PositionsCount];
+  private double mMinDistance[PositionsCount];
   private ui int mColors[SoundTypesCount];
   private transient bool mIsInitialized;
   private transient ThinkerIterator mIterator;
@@ -172,7 +176,10 @@ class sts_EventHandler : EventHandler
   private transient Cvar mScaleCvar;
   private transient Cvar mXDistanceCvar;
   private transient Cvar mYPositionCvar;
+
   private transient Cvar mMaxDistanceCvar;
+  private transient Cvar mNoiseEnabledCvar;
+
   private transient Cvar mColorNoiseCvar;
   private transient Cvar mColorGeometryCvar;
   private transient Cvar mColorDangerCvar;

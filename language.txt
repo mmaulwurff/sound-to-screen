@@ -16,4 +16,5 @@ STS_COLOR_NOISE    = "Noise color";
 STS_COLOR_GEOMETRY = "Level geometry change color";
 STS_COLOR_DANGER   = "Danger color";
 
-STS_MAX_DISTANCE = "Maximum distance to sound";
+STS_MAX_DISTANCE  = "Maximum distance to sound";
+STS_NOISE_ENABLED = "Noise detection";
