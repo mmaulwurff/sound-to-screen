@@ -1,8 +1,9 @@
 user int   sts_scale = 2;
 user float sts_x_distance = 0.3;
 user float sts_y_position = 0.7;
+user bool  sts_show_distance = false;
 
-user int   sts_max_distance = 2000;
+user int   sts_max_distance2 = 50;
 user bool  sts_noise_enabled = true;
 
 user int   sts_color_noise = 9; // white

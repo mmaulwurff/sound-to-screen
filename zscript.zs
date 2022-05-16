@@ -27,7 +27,10 @@ class sts_EventHandler : EventHandler
   override void worldTick()
   {
     for (let position = Left; position < PositionsCount; ++position)
+    {
       mSounds[position] = None;
+      mMinDistance[position] = int.max;
+    }
 
     if (players[consolePlayer].mo == NULL) return;
 
@@ -37,7 +40,6 @@ class sts_EventHandler : EventHandler
       initialize();
 
     int maxDistance = mMaxDistanceCvar.getInt();
-    int maxDistanceSquared = maxDistance * maxDistance;
     bool noiseEnabled = mNoiseEnabledCvar.getInt();
 
     let player = players[consolePlayer].mo;
@@ -50,13 +52,17 @@ class sts_EventHandler : EventHandler
         if (anActor == player) continue;
         if (anActor is "Inventory" && Inventory(anActor).owner != NULL) continue;
         if (!anActor.isActorPlayingSound(CHAN_AUTO)) continue;
-        if (anActor.distance2DSquared(player) > maxDistanceSquared) continue;
+        int distance = int(anActor.distance2D(player)) / DISTANCE_UNIT;
+        if (distance > maxDistance) continue;
 
         let type = ((anActor.bIsMonster && !anActor.bFriendly)
                     || (anActor.bMissile && anActor.damage > 0)) ? Danger : Noise;
         if (type == Noise && !noiseEnabled) continue;
         let position = calculateActorScreenPosition(anActor);
         mSounds[position] = max(mSounds[position], type);
+
+        if (mSounds[position] == type)
+          mMinDistance[position] = min(mMinDistance[position], distance);
 
         if (mSounds[Left] == Danger && mSounds[Center] == Danger && mSounds[Right] == Danger)
           break;
@@ -70,10 +76,14 @@ class sts_EventHandler : EventHandler
         Sector movingSector = aMover.getSector();
         vector3 playerRelative = player.posRelative(movingSector);
         vector2 diff = movingSector.centerSpot - playerRelative.xy;
-        if (diff.length() > maxDistance) continue;
+        int distance = int(diff.length()) / DISTANCE_UNIT;
+        if (distance > maxDistance) continue;
 
         let position = calculateSectorScreenPosition(movingSector);
         mSounds[position] = max(mSounds[position], Geometry);
+
+        if (mSounds[position] == Geometry)
+          mMinDistance[position] = min(mMinDistance[position], distance);
       }
     }
   }
@@ -101,7 +111,9 @@ class sts_EventHandler : EventHandler
 
   private ui void renderText(ScreenPosition screenPosition, double xPosition, string text)
   {
-    text = StringTable.localize(text, false);
+    text = mShowDistanceCvar.getInt()
+      ? String.format("%d", mMinDistance[screenPosition])
+      : StringTable.localize(text, false);
     Font aFont = NewSmallFont;
     int scale = mScaleCvar.getInt();
     int textWidth  = scale * aFont.stringWidth(text);
@@ -131,7 +143,9 @@ class sts_EventHandler : EventHandler
     mScaleCvar        = Cvar.getCvar("sts_scale", player);
     mXDistanceCvar    = Cvar.getCvar("sts_x_distance", player);
     mYPositionCvar    = Cvar.getCvar("sts_y_position", player);
-    mMaxDistanceCvar  = Cvar.getCvar("sts_max_distance", player);
+    mShowDistanceCvar = Cvar.getCvar("sts_show_distance", player);
+
+    mMaxDistanceCvar  = Cvar.getCvar("sts_max_distance2", player);
     mNoiseEnabledCvar = Cvar.getCvar("sts_noise_enabled", player);
 
     mColorNoiseCvar    = Cvar.getCvar("sts_color_noise", player);
@@ -167,9 +181,10 @@ class sts_EventHandler : EventHandler
   enum ScreenPosition {Left, Center, Right, PositionsCount}
   const MARGIN = 5;
   const SCREEN_CENTER = 0.5;
+  const DISTANCE_UNIT = 32;
 
   private SoundType mSounds[PositionsCount];
-  private double mMinDistance[PositionsCount];
+  private int mMinDistance[PositionsCount];
   private ui int mColors[SoundTypesCount];
   private transient bool mIsInitialized;
   private transient ThinkerIterator mIterator;
@@ -177,6 +192,7 @@ class sts_EventHandler : EventHandler
   private transient Cvar mScaleCvar;
   private transient Cvar mXDistanceCvar;
   private transient Cvar mYPositionCvar;
+  private transient Cvar mShowDistanceCvar;
 
   private transient Cvar mMaxDistanceCvar;
   private transient Cvar mNoiseEnabledCvar;

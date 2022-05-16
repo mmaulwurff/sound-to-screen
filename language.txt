@@ -11,6 +11,7 @@ STS_MENU_TITLE = "Sound to Screen";
 STS_SCALE = "Scale";
 STS_X_DISTANCE = "Horizontal distance from center";
 STS_Y_POSITION = "Vertical position";
+STS_SHOW_DISTANCE = "Show distance";
 
 STS_COLOR_NOISE    = "Noise color";
 STS_COLOR_GEOMETRY = "Level geometry change color";
