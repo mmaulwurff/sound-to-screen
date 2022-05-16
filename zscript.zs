@@ -52,7 +52,8 @@ class sts_EventHandler : EventHandler
         if (!anActor.isActorPlayingSound(CHAN_AUTO)) continue;
         if (anActor.distance2DSquared(player) > maxDistanceSquared) continue;
 
-        let type = (anActor.bIsMonster || anActor.bMissile) ? Danger : Noise;
+        let type = ((anActor.bIsMonster && !anActor.bFriendly)
+                    || (anActor.bMissile && anActor.damage > 0)) ? Danger : Noise;
         if (type == Noise && !noiseEnabled) continue;
         let position = calculateActorScreenPosition(anActor);
         mSounds[position] = max(mSounds[position], type);
