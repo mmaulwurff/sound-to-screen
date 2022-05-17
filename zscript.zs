@@ -40,6 +40,7 @@ class sts_EventHandler : EventHandler
     }
 
     if (players[consolePlayer].mo == NULL) return;
+    if (automapActive && !mOnAutomapCvar.getInt()) return;
 
     if (mIsInitialized)
       mIterator.reinit();
@@ -151,6 +152,7 @@ class sts_EventHandler : EventHandler
     mXDistanceCvar    = Cvar.getCvar("sts_x_distance", player);
     mYPositionCvar    = Cvar.getCvar("sts_y_position", player);
     mShowDistanceCvar = Cvar.getCvar("sts_show_distance", player);
+    mOnAutomapCvar    = Cvar.getCvar("sts_on_automap", player);
 
     mMaxDistanceCvar  = Cvar.getCvar("sts_max_distance2", player);
     mNoiseEnabledCvar = Cvar.getCvar("sts_noise_enabled", player);
@@ -200,6 +202,7 @@ class sts_EventHandler : EventHandler
   private transient Cvar mXDistanceCvar;
   private transient Cvar mYPositionCvar;
   private transient Cvar mShowDistanceCvar;
+  private transient Cvar mOnAutomapCvar;
 
   private transient Cvar mMaxDistanceCvar;
   private transient Cvar mNoiseEnabledCvar;

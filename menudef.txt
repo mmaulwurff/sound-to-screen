@@ -9,6 +9,7 @@ OptionMenu sts_Menu
   Slider "$STS_X_DISTANCE", sts_x_distance, 0.1, 0.5, 0.01, 2
   Slider "$STS_Y_POSITION", sts_y_position, 0.0, 1.0, 0.01, 2
   Option "$STS_SHOW_DISTANCE", sts_show_distance, OnOff
+  Option "$STS_ON_AUTOMAP", sts_on_automap, OnOff
 
   StaticText ""
   Option "$STS_COLOR_NOISE",    sts_color_noise,    TextColors
