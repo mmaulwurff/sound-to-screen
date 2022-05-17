@@ -55,7 +55,7 @@ class sts_EventHandler : EventHandler
         int distance = int(anActor.distance2D(player)) / DISTANCE_UNIT;
         if (distance > maxDistance) continue;
 
-        let type = ((anActor.bIsMonster && !anActor.bFriendly)
+        let type = ((anActor.bIsMonster && !anActor.bFriendly && anActor.health > 0)
                     || (anActor.bMissile && anActor.damage > 0)) ? Danger : Noise;
         if (type == Noise && !noiseEnabled) continue;
         let position = calculateActorScreenPosition(anActor);
