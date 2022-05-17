@@ -20,6 +20,13 @@ version 4.7.1
 
 class sts_EventHandler : EventHandler
 {
+  override void worldLoaded(WorldEvent event)
+  {
+    bool isTitlemap = (level.mapName ~== "TITLEMAP");
+    if (isTitlemap)
+      destroy();
+  }
+
   /**
    * Fills mSounds array by searching for actors that make sounds and
    * doors/elevators.
